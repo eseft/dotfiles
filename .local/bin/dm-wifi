@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+nmcli device wifi rescan
+SSID=$(nmcli -f SSID device wifi list \
+    | grep -v SSID \
+    | dmenu -l 10 -p "Choose SSID:")
+PASS=$(dmenu -P -p "Enter password:")
+nmcli device wifi connect $SSID password $PASS

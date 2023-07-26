@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+if [ $# -ne 0 ]
+then
+    [ $1 == "increase" ] && pactl set-sink-volume @DEFAULT_SINK@ +2%
+    [ $1 == "decrease" ] && pactl set-sink-volume @DEFAULT_SINK@ -2%
+    [ $1 == "mute" ] && pactl set-sink-mute @DEFAULT_SINK@ 'toggle'
+fi
+
+sigdwmblocks 2

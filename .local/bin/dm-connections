@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Check if we have active connections
+ACITVE_CONNECTION=$(nmcli -f NAME connection show --active | tail -1)
+if [ ${#ACITVE_CONNECTION} -eq 0 ]
+then
+    # In this case we are disconnected
+    # Run dmenu script to choose between stored connections
+    CONN=$(nmcli -f NAME connection show \
+           | grep -v NAME \
+           | dmenu -l 10 -p "Choose one of the stored connections:")
+    nmcli connection up $CONN
+else
+    CHOICE=$(printf "No\\nYes" \
+             | dmenu -l 10 \
+             -p "Do You realy want to disconnect from $ACITVE_CONNECTION")
+    [ $CHOICE == "Yes" ] && nmcli connection down $ACITVE_CONNECTION
+fi

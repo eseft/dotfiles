@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Books direcotory
+BOOKS_DIR="$HOME/docs/media/books"
+
+# Pass books list to dmenu
+CHOOSE_BOOK=$(ls -l "${BOOKS_DIR}" | awk '{ print $9 }' | dmenu -l 10 -p "Choose book")
+
+# Run book in zathura
+zathura "${BOOKS_DIR}/${CHOOSE_BOOK}"
