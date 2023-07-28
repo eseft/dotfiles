@@ -179,18 +179,18 @@
   <keyboard>
     <chainQuitKey>C-g</chainQuitKey>
     <!-- Keybindings for desktop switching -->
-	<!-- Move active window to next monitor-->
-	<keybind key="W-S-j">
-		<action name="MoveResizeTo">
-			<monitor>next</monitor>
-		</action>
-	</keybind>
-	<!-- Move active window to prev monitor-->
-	<keybind key="W-S-k">
-		<action name="MoveResizeTo">
-			<monitor>prev</monitor>
-		</action>
-	</keybind>
+    <!-- Move active window to next monitor-->
+    <keybind key="W-S-j">
+      <action name="MoveResizeTo">
+        <monitor>next</monitor>
+      </action>
+    </keybind>
+    <!-- Move active window to prev monitor-->
+    <keybind key="W-S-k">
+      <action name="MoveResizeTo">
+        <monitor>prev</monitor>
+      </action>
+    </keybind>
     <keybind key="S-A-Left">
       <action name="SendToDesktop">
         <to>left</to>
