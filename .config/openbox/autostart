@@ -2,7 +2,6 @@ lxpolkit &
 /usr/bin/emacs --daemon &
 /usr/bin/syndaemon -i 0.5 -K -R &
 xcape -t 500 -e 'Control_L=Escape' &
-xrandr --output HDMI-A-0 --auto --output eDP --auto --right-of HDMI-A-0 &
 picom --config $HOME/.config/picom/picom.conf &
 nitrogen --restore &
 tint2 &
