@@ -1,0 +1,500 @@
+#+TITLE: Emacs configuration
+#+AUTHOR: Eseft
+#+DESCRIPTION: Eseft's personal emacs configuration
+#+OPTIONS: toc:2
+
+* TABLE OF CONTENTS :toc:
+- [[#install-first][Install First]]
+  - [[#package-manager][Package Manager]]
+  - [[#evil-mode][Evil Mode]]
+  - [[#general-keybindings][General Keybindings]]
+- [[#all-the-icons][All The Icons]]
+- [[#ivy][Ivy]]
+- [[#org-mode][Org Mode]]
+  - [[#enable-table-of-contents][Enable Table of Contents]]
+  - [[#org-bullets][Org Bullets]]
+  - [[#org-tempo][Org Tempo]]
+- [[#which-key][Which-Key]]
+- [[#emacs-settings][Emacs Settings]]
+  - [[#backup-files][Backup files]]
+  - [[#ui][UI]]
+  - [[#fonts][Fonts]]
+- [[#terminal][Terminal]]
+  - [[#vterm][Vterm]]
+  - [[#vterm-toggle][Vterm-toggle]]
+- [[#preferences][Preferences]]
+  - [[#themes][Themes]]
+  - [[#modeline][Modeline]]
+- [[#dashboard][Dashboard]]
+  - [[#dashboard-config][Dashboard Config]]
+- [[#git][GIT]]
+  - [[#magit][Magit]]
+  - [[#diff-hl][Diff-hl]]
+- [[#projectile][Projectile]]
+- [[#languages][Languages]]
+  - [[#flycheck][Flycheck]]
+  - [[#company][Company]]
+  - [[#lsp][LSP]]
+
+* Install First
+** Package Manager
+Install Elpaca Package Manager
+#+begin_src emacs-lisp
+    (defvar elpaca-installer-version 0.5)
+    (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+    (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+    (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+    (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+				  :ref nil
+				  :files (:defaults (:exclude "extensions"))
+				  :build (:not elpaca--activate-package)))
+    (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+	   (build (expand-file-name "elpaca/" elpaca-builds-directory))
+	   (order (cdr elpaca-order))
+	   (default-directory repo))
+      (add-to-list 'load-path (if (file-exists-p build) build repo))
+      (unless (file-exists-p repo)
+	(make-directory repo t)
+	(when (< emacs-major-version 28) (require 'subr-x))
+	(condition-case-unless-debug err
+	    (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		     ((zerop (call-process "git" nil buffer t "clone"
+					   (plist-get order :repo) repo)))
+		     ((zerop (call-process "git" nil buffer t "checkout"
+					   (or (plist-get order :ref) "--"))))
+		     (emacs (concat invocation-directory invocation-name))
+		     ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					   "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		     ((require 'elpaca))
+		     ((elpaca-generate-autoloads "elpaca" repo)))
+		(progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	      (error "%s" (with-current-buffer buffer (buffer-string))))
+	  ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+      (unless (require 'elpaca-autoloads nil t)
+	(require 'elpaca)
+	(elpaca-generate-autoloads "elpaca" repo)
+	(load "./elpaca-autoloads")))
+    (add-hook 'after-init-hook #'elpaca-process-queues)
+    (elpaca `(,@elpaca-order))
+#+end_src
+
+Setup use-package support
+#+begin_src emacs-lisp
+    ;; Install use-package support
+    (elpaca elpaca-use-package
+	    ;; Enable :elpaca use-package keyword.
+	    (elpaca-use-package-mode)
+	    ;; Assume :elpaca t unless otherwise specified.
+	    (setq elpaca-use-package-by-default t))
+    ;; Block until current queue processed.
+    (elpaca-wait)
+#+end_src
+
+** Evil Mode
+Install and config Evil-Mode
+#+begin_src emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq evil-want-integration t) ;; This is optional since it's already set to t by default.
+    (setq evil-want-keybinding nil)
+    (setq evil-want-C-u-scroll t)
+    :config
+    (evil-mode 1))
+#+end_src
+
+Install and config Evil-Collection
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :after evil
+    :ensure t
+    :config
+    (evil-collection-init))
+#+end_src
+
+** General Keybindings
+Istall and setup General
+#+begin_src emacs-lisp
+  (use-package general
+    :config
+    (general-evil-setup)
+
+    ;; set up 'SPC' as the global leader key
+    (general-create-definer leader-keys
+      :states '(normal insert visual emacs)
+      :keymaps 'override
+      :prefix "SPC" ;; set leader
+      :global-prefix "M-SPC") ;; access leader in insert mode
+
+    (leader-keys
+      "." '(counsel-find-file :wk "Find file")
+      "f c" '((lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))) :wk "Edit emacs config")
+      "f r" '(counsel-recentf :wk "Find recent file"))
+
+    (leader-keys
+      "b" '(:ignore t :wk "buffer")
+      "b b" '(switch-to-buffer :wk "Switch buffer")
+      "b i" '(ibuffer :wk "Ibuffer")
+      "b k" '(kill-this-buffer :wk "Kill this buffer")
+      "b n" '(next-buffer :wk "Next buffer")
+      "b p" '(previous-buffer :wk "Previous buffer")
+      "b r" '(revert-buffer :wk "Reload buffer"))
+
+    (leader-keys
+      "w" '(:ignore t :wk "evil-window")
+      "w w" '(evil-window-next :wk "Evil Window Next")
+      "w c" '(evil-window-delete :wk "Evil Window Close")
+      "w o" '(delete-other-windows :wk "Delete other windows")
+      "w v" '(evil-window-vsplit :wk "Evil vSplit")
+      "w s" '(evil-window-split :wk "Evil Split")
+      "w h" '(evil-window-left :wk "Evil Window Jump left")
+      "w l" '(evil-window-right :wk "Evil Window Jump right")
+      "w k" '(evil-window-up :wk "Evil Window Jump up")
+      "w j" '(evil-window-down :wk "Evil Window Jump down")
+      "w H" '(evil-window-move-far-left :wk "Evil Window move far left")
+      "w L" '(evil-window-move-far-right :wk "Evil Window move far right")
+      "w K" '(evil-window-move-very-top :wk "Evil Window move very top")
+      "w J" '(evil-window-move-very-bottom :wk "Evil Window move very bottom"))
+
+    (leader-keys
+      "e" '(:ignore t :wk "Evaluate")    
+      "e b" '(eval-buffer :wk "Evaluate elisp in buffer")
+      "e d" '(eval-defun :wk "Evaluate defun containing or after point")
+      "e e" '(eval-expression :wk "Evaluate and elisp expression")
+      "e l" '(eval-last-sexp :wk "Evaluate elisp expression before point")
+      "e r" '(eval-region :wk "Evaluate elisp in region")) 
+
+    (leader-keys
+      "p" '(:ignore t :wk "Projectile")    
+      "p p" '(project-switch-project :wk "Projectile Switch Project")
+      "p f" '(project-find-file :wk "Projectile Find File in Project")
+      "p g" '(project-find-regexp :wk "Projectile Find in project with regexp")) 
+
+     (leader-keys
+      "h" '(:ignore t :wk "Help")
+      "h f" '(describe-function :wk "Describe function")
+      "h v" '(describe-variable :wk "Describe variable")
+      "h r r" '((lambda () (interactive) (load-file (expand-file-name "init.el" user-emacs-directory)) (ignore (elpaca-process-queues))) :wk "Reload emacs config"))
+
+     (leader-keys
+      "g" '(:ignore t :wk "Magit")
+      "g g" '(magit-status :wk "Magit status"))
+
+     (leader-keys
+      "t" '(:ignore t :wk "Toggle")
+      "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
+      "t t" '(vterm-toggle :wk "Toggle Vterm"))
+
+     (leader-keys
+      "q" '(:ignore t :wk "Quit")
+      "q f" '(delete-frame :wk "Close emacs client frame"))
+  )
+#+end_src
+* All The Icons
+An icon set for Emacs
+#+begin_src emacs-lisp
+(use-package all-the-icons
+  :ensure t
+  :if (display-graphic-p))
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . (lambda () (all-the-icons-dired-mode t))))
+#+end_src
+
+* Ivy
+Setup Ivy and dependend stuff
+#+begin_src emacs-lisp
+  (use-package counsel
+    :after ivy
+    :config (counsel-mode))
+
+  (use-package ivy
+    :bind
+    ;; ivy-resume resumes the last Ivy-based completion.
+    (("C-c C-r" . ivy-resume)
+     ("C-x B" . ivy-switch-buffer-other-window))
+    :custom
+    (setq ivy-use-virtual-buffers t)
+    (setq ivy-count-format "(%d/%d) ")
+    (setq enable-recursive-minibuffers t)
+    :config
+    (ivy-mode))
+
+  (use-package all-the-icons-ivy-rich
+    :ensure t
+    :init (all-the-icons-ivy-rich-mode 1))
+
+  (use-package ivy-rich
+    :after ivy
+    :ensure t
+    :init (ivy-rich-mode 1) ;; this gets us descriptions in M-x.
+    :custom
+    (ivy-virtual-abbreviate 'full
+     ivy-rich-switch-buffer-align-virtual-buffer t
+     ivy-rich-path-style 'abbrev))
+    ;; :config
+    ;; (ivy-set-display-transformer 'ivy-switch-buffer
+    ;;                              'ivy-rich-switch-buffer-transformer))
+#+end_src
+
+* Org Mode
+** Enable Table of Contents
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :commands toc-org-enable
+    :init (add-hook 'org-mode-hook 'toc-org-enable))
+#+end_src
+
+** Org Bullets
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook 'toc-indent-mode)
+  (use-package org-bullets)
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+#+end_src
+
+** Org Tempo
+Probably most useful one of org-tempo is: "<sTAB" will start source region.
+#+begin_src emacs-lisp
+  (require 'org-tempo)
+#+end_src
+
+* Which-Key
+Install and setup Which-Key package
+#+begin_src emacs-lisp
+    (use-package which-key
+      :init
+	(which-key-mode 1)
+      :config
+	(setq which-key-side-windo-location 'bottom
+	      which-key-sort-order #'which-key-key-order-alpha
+	      which-key-sort-uppercase-first nil
+              which-key-add-column-padding 1
+              which-key-max-display-colums nil
+              which-key-min-display-lines 6
+              which-key-side-window-slot -10
+              which-key-side-window-max-height 0.25
+              which-key-idle-delay 0.8
+              which-key-max-description-length 25
+              which-key-allow-imprecise-window-fit t
+              which-key-separator " ⇝ "
+  ))
+#+end_src
+
+* Emacs Settings
+Configure Fonts and UI
+** Backup files
+#+begin_src emacs-lisp
+  (setq make-backup-files nil)
+#+end_src
+** UI
+Disable Menubar, Toolbar, Scrollbar
+#+begin_src emacs-lisp
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+#+end_src
+
+Display Line Numbers and Truncated Lines
+#+begin_src emacs-lisp
+  (global-display-line-numbers-mode 1)
+  (global-visual-line-mode t)
+  (setq display-line-numbers-type 'relative)
+#+end_src
+
+** Fonts
+Setup prefered fonts
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil
+    :font "JetBrainsMono Nerd Font Mono"
+    :height 120
+    :weight 'medium)
+  (set-face-attribute 'variable-pitch nil
+    :font "Ubuntu"
+    :height 130
+    :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil
+    :font "JetBrainsMono Nerd Font Mono"
+    :height 120
+    :weight 'medium)
+  ;; To set correct fonts on client frames
+  (add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font Mono-12"))
+  (setq-default line-spacing 0.12)
+#+end_src
+
+* Terminal
+** Vterm
+Install vterm terminal
+#+begin_src emacs-lisp
+ (use-package vterm) 
+#+end_src
+
+** Vterm-toggle
+Install vterm-toggle
+#+begin_src emacs-lisp
+  (use-package vterm-toggle
+    :after vterm
+    :ensure t
+    :config
+    (setq vterm-toggle-fullscreen-p nil)
+    (setq vterm-toggle-scope 'project)
+    (add-to-list 'display-buffer-alist
+		 '((lambda (buffer-or-name _)
+		     (let ((buffer (get-buffer buffer-or-name)))
+		       (with-current-buffer buffer
+			 (or (equal major-mode 'vterm-mode)
+			     (string-prefix-p vterm-buffer-name (buffer-name buffer))))))
+		   (display-buffer-reuse-window display-buffer-at-bottom)
+		   ;;(display-buffer-reuse-window display-buffer-in-direction)
+		   ;;display-buffer-in-direction/direction/dedicated is added in emacs27
+		   ;;(direction . bottom)
+		   ;;(dedicated . t) ;dedicated is supported in emacs27
+		   (reusable-frames . visible)
+		   (window-height . 0.3))))
+#+end_src
+
+* Preferences
+** Themes
+#+begin_src emacs-lisp
+    (use-package doom-themes
+	:config
+	(setq doom-themes-enable-bold t
+	      doom-themes-enable-italic t)
+        (load-theme 'doom-one t)
+        (doom-themes-visual-bell-config)
+        (doom-themes-org-config))
+#+end_src
+
+** Modeline
+Add Nerd Icons
+#+begin_src emacs-lisp
+  (use-package nerd-icons)
+#+end_src
+Add Doom modeline
+#+begin_src emacs-lisp
+	(use-package doom-modeline
+	  :ensure t
+	  :init (doom-modeline-mode 1)
+	  :config (setq doom-modeline-project-detection 'file-name
+			doom-modeline-height 30
+                        doom-modeline-modal-icon t))
+#+end_src
+
+* Dashboard
+** Dashboard Config
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :ensure t
+    :init
+    (setq initial-buffer-choice 'dashboard-open)
+    (setq dashboard-display-icons-p t)
+    (setq dashboard-icon-type 'nerd-icons)
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+    ;; Set the title
+    (setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+    ;; Set the banner
+    (setq dashboard-startup-banner (expand-file-name "banners/logo.png" user-emacs-directory))
+    ;; Value can be
+    ;; - nil to display no banner
+    ;; - 'official which displays the official emacs logo
+    ;; - 'logo which displays an alternative emacs logo
+    ;; - 1, 2 or 3 which displays one of the text banners
+    ;; - "path/to/your/image.gif", "path/to/your/image.png" or "path/to/your/text.txt" which displays whatever gif/image/text you would prefer
+    ;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
+
+    (setq dashboard-items '((recents  . 5)
+			    (projects . 5)))
+
+    ;; Content is not centered by default. To center, set
+    (setq dashboard-center-content t)
+    ;; To disable shortcut "jump" indicators for each section, set
+    (setq dashboard-show-shortcuts nil)
+    :config
+    (dashboard-setup-startup-hook))
+#+end_src
+* GIT
+** Magit
+#+begin_src emacs-lisp
+  (use-package magit
+    :commands magit-get-top-dir)
+#+end_src
+** Diff-hl
+#+begin_src emacs-lisp
+  (use-package diff-hl
+    :after magit
+    :init
+    (global-diff-hl-mode))
+    (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+#+end_src
+* Projectile
+Setup projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :ensure t
+    :init (projectile-mode +1)
+    :config
+    (setq projectile-project-search-path '(("~/docs/projects" . 1))))
+#+end_src
+* Languages
+** Flycheck
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :ensure t
+    :defer t
+    :init (global-flycheck-mode))
+#+end_src
+
+** Company
+#+begin_src emacs-lisp
+  (use-package company
+  :defer 2
+  :diminish
+  :custom
+  (company-begin-commands '(self-insert-command))
+  (company-idle-delay .1)
+  (company-minimum-prefix-length 2)
+  (company-show-numbers t)
+  (company-tooltip-align-annotations 't)
+  (global-company-mode t))
+
+(use-package company-box
+  :after company
+  :diminish
+  :hook (company-mode . company-box-mode))
+#+end_src
+** LSP
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+	   ;; Csharp
+	   (csharp-mode . lsp-deferred)
+	   ;; Python
+	   (python-mode . lsp-deferred)
+	   ;; C/C++
+	   (c-or-c++-mode . lsp-deferred)
+	   ;; if you want which-key integration
+	   (lsp-mode . lsp-enable-which-key-integration))
+    :commands (lsp lsp-deferred))
+
+  ;; optionally
+  (use-package lsp-ui :commands lsp-ui-mode)
+  ;; if you are ivy user
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+
+  ;; The path to lsp-mode needs to be added to load-path as well as the
+  ;; path to the `clients' subdirectory.
+  (add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
+#+end_src
+
+- TODO: Try to setup debugger
+#+begin_src emacs-lisp
+  ;; optionally if you want to use debugger
+  ;; (use-package dap-mode)
+  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+#+end_src
