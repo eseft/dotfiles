@@ -1,0 +1,14 @@
+# Emacs Temp Files
+.#*
+\#*
+*~
+# Emacs ignore
+.config/emacs/auto-save-list
+.config/emacs/.chache
+.config/emacs/elpaca
+.config/emacs/.lsp-session-v1
+.config/emacs/projectile-bookmarks.eld
+.config/emacs/projects
+.config/emacs/recentf
+.config/emacs/transient
+.config/emacs/url

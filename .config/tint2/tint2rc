@@ -190,18 +190,18 @@ execp_centered = 0
 # Battery
 battery_tooltip = 1
 battery_low_status = 20
-battery_low_cmd = notify-send "battery low"
+battery_low_cmd =
 bat1_font = Droid Sans Bold 8
 bat2_font = Droid Sans Bold 8
 battery_font_color = #d1d1d1 100
 battery_padding = 2 0
 battery_background_id = 1
 battery_hide = 96
-battery_lclick_command = 
-battery_rclick_command = 
-battery_mclick_command = 
-battery_uwheel_command = 
-battery_dwheel_command = 
+battery_lclick_command =
+battery_rclick_command =
+battery_mclick_command =
+battery_uwheel_command =
+battery_dwheel_command =
 ac_connected_cmd = 
 ac_disconnected_cmd = 
 

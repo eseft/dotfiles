@@ -1,6 +1,8 @@
 \.git
 \.gitignore
 
+^/postinstall.sh
+
 ^/README.*
 ^/LICENSE.*
 ^/COPYING
