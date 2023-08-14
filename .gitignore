@@ -5,6 +5,7 @@
 # Emacs ignore
 .config/emacs/auto-save-list
 .config/emacs/.cache
+.config/emacs/emms
 .config/emacs/elpaca
 .config/emacs/.lsp-session-v1
 .config/emacs/projectile-bookmarks.eld
