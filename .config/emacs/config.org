@@ -8,6 +8,7 @@
   - [[#package-manager][Package Manager]]
   - [[#evil-mode][Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
+- [[#emms][EMMS]]
 - [[#all-the-icons][All The Icons]]
 - [[#ivy][Ivy]]
 - [[#org-mode][Org Mode]]
@@ -126,6 +127,12 @@ Istall and setup General
       :prefix "SPC" ;; set leader
       :global-prefix "M-SPC") ;; access leader in insert mode
 
+    ;;(general-create-definer code-keys
+    ;;  :states '(normal insert visual emacs)
+    ;;  :keymaps 'override
+    ;;  :prefix "SPC c") ;; set leader
+
+
     (leader-keys
       "." '(counsel-find-file :wk "Find file")
       "f c" '((lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))) :wk "Edit emacs config")
@@ -139,6 +146,15 @@ Istall and setup General
       "b n" '(next-buffer :wk "Next buffer")
       "b p" '(previous-buffer :wk "Previous buffer")
       "b r" '(revert-buffer :wk "Reload buffer"))
+
+    (leader-keys
+      "c" '(:ignore t :wk "Code")
+      "cf" '(:ignore t :wk "Flycheck")
+      "cf e" '(flycheck-explain-error-at-point :wk "flycheck-explain-error-at-point")
+      "cf h" '(flycheck-display-error-at-point :wk "flycheck-display-error-at-point")
+      "cf l" '(flycheck-list-errors :wk "flycheck-list-errors")
+      "cf n" '(flycheck-next-error :wk "flycheck-next-error")
+      "cf p" '(flycheck-previous-errors :wk "flycheck-previous-errors"))
 
     (leader-keys
       "w" '(:ignore t :wk "evil-window")
@@ -166,9 +182,9 @@ Istall and setup General
 
     (leader-keys
       "p" '(:ignore t :wk "Projectile")    
-      "p p" '(project-switch-project :wk "Projectile Switch Project")
-      "p f" '(project-find-file :wk "Projectile Find File in Project")
-      "p g" '(project-find-regexp :wk "Projectile Find in project with regexp")) 
+      "p p" '(projectile-switch-project :wk "Projectile Switch Project")
+      "p f" '(projectile-find-file :wk "Projectile Find File in Project")
+      "p g" '(projectile-ripgrep :wk "Projectile Find in project with regexp")) 
 
      (leader-keys
       "h" '(:ignore t :wk "Help")
@@ -189,6 +205,17 @@ Istall and setup General
       "q" '(:ignore t :wk "Quit")
       "q f" '(delete-frame :wk "Close emacs client frame"))
   )
+#+end_src
+* EMMS
+Install and configure EMMS with mpv backend
+#+begin_src emacs-lisp
+  (use-package emms
+    :ensure t
+    :init
+    (add-hook 'emms-player-started-hook 'emms-show)
+    :config
+    (emms-standard)
+    (emms-default-players))
 #+end_src
 * All The Icons
 An icon set for Emacs
@@ -261,23 +288,19 @@ Probably most useful one of org-tempo is: "<sTAB" will start source region.
 * Which-Key
 Install and setup Which-Key package
 #+begin_src emacs-lisp
-    (use-package which-key
-      :init
-	(which-key-mode 1)
-      :config
-	(setq which-key-side-windo-location 'bottom
-	      which-key-sort-order #'which-key-key-order-alpha
-	      which-key-sort-uppercase-first nil
-              which-key-add-column-padding 1
-              which-key-max-display-colums nil
-              which-key-min-display-lines 6
-              which-key-side-window-slot -10
-              which-key-side-window-max-height 0.25
-              which-key-idle-delay 0.8
-              which-key-max-description-length 25
-              which-key-allow-imprecise-window-fit t
-              which-key-separator " ⇝ "
-  ))
+  (use-package which-key
+    :init
+      (which-key-mode 1)
+    :config
+      (setq which-key-popup-type 'minibuffer
+	    which-key-sort-order #'which-key-key-order-alpha
+	    which-key-sort-uppercase-first nil
+	    which-key-add-column-padding 1
+	    which-key-max-display-colums nil
+	    which-key-min-display-lines 6
+	    which-key-idle-delay 0.8
+	    which-key-max-description-length 25
+	    which-key-separator " ⇝ "))
 #+end_src
 
 * Emacs Settings
@@ -416,7 +439,8 @@ Add Doom modeline
 ** Magit
 #+begin_src emacs-lisp
   (use-package magit
-    :commands magit-get-top-dir)
+    :commands magit-get-top-dir
+    :config (setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1))
 #+end_src
 ** Diff-hl
 #+begin_src emacs-lisp
@@ -465,31 +489,31 @@ Setup projectile
 #+end_src
 ** LSP
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-	   ;; Csharp
-	   (csharp-mode . lsp-deferred)
-	   ;; Python
-	   (python-mode . lsp-deferred)
-	   ;; C/C++
-	   (c-or-c++-mode . lsp-deferred)
-	   ;; if you want which-key integration
-	   (lsp-mode . lsp-enable-which-key-integration))
-    :commands (lsp lsp-deferred))
+    (use-package lsp-mode
+      :init
+      ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+      (setq lsp-keymap-prefix "C-c l")
+      :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+	     ;; Csharp
+	     (csharp-mode . lsp-deferred)
+	     ;; Python
+	     (python-mode . lsp-deferred)
+	     ;; C/C++
+	     (c-or-c++-mode . lsp-deferred)
+	     ;; if you want which-key integration
+	     (lsp-mode . lsp-enable-which-key-integration))
+      :commands (lsp lsp-deferred))
 
-  ;; optionally
-  (use-package lsp-ui :commands lsp-ui-mode)
-  ;; if you are ivy user
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+    ;; optionally
+    (use-package lsp-ui :commands lsp-ui-mode)
+    ;; if you are ivy user
+    (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+    (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-  ;; The path to lsp-mode needs to be added to load-path as well as the
-  ;; path to the `clients' subdirectory.
-  (add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
-  (add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
+    ;; The path to lsp-mode needs to be added to load-path as well as the
+    ;; path to the `clients' subdirectory.
+    (add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
+    (add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
 #+end_src
 
 - TODO: Try to setup debugger
