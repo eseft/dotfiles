@@ -14,11 +14,11 @@ if status is-interactive
     ###         ALIASES         ###
     ###############################
     alias ls='exa -al --git --icons -s type'
-    alias pcmupg='sudo pacman -Syu && sigdwmblocks 7'
+    alias pcmupg='sudo pacman -Syu'
     alias pcmins='sudo pacman -S'
     alias pcmsrc='pacman -Ss'
     alias malina='ssh raspberry'
-	alias sedit='EDITOR=nvim sudoedit'
+    alias sedit='EDITOR=nvim sudoedit'
 
     ###############################
     ###        FOR ESP32        ###
