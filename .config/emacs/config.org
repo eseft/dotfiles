@@ -15,11 +15,13 @@
   - [[#enable-table-of-contents][Enable Table of Contents]]
   - [[#org-bullets][Org Bullets]]
   - [[#org-tempo][Org Tempo]]
+- [[#highlight-todo][Highlight TODO]]
 - [[#which-key][Which-Key]]
 - [[#emacs-settings][Emacs Settings]]
-  - [[#backup-files][Backup files]]
+  - [[#backup-and-lock-files][Backup and Lock files]]
   - [[#ui][UI]]
   - [[#fonts][Fonts]]
+  - [[#transparency][Transparency]]
 - [[#terminal][Terminal]]
   - [[#vterm][Vterm]]
   - [[#vterm-toggle][Vterm-toggle]]
@@ -32,6 +34,8 @@
   - [[#magit][Magit]]
   - [[#diff-hl][Diff-hl]]
 - [[#projectile][Projectile]]
+  - [[#ripgrep][Ripgrep]]
+  - [[#projectile-1][Projectile]]
 - [[#languages][Languages]]
   - [[#flycheck][Flycheck]]
   - [[#company][Company]]
@@ -194,7 +198,23 @@ Istall and setup General
 
      (leader-keys
       "g" '(:ignore t :wk "Magit")
-      "g g" '(magit-status :wk "Magit status"))
+      "gg" '(magit-status :wk "Magit status")
+      "gc" '(:ignore t :wk "Magit clone")
+      "gc c" '(magit-clone :wk "Magit clone")
+      "gc r" '(magit-clone-regular :wk "Magit clone regular")
+      "gP" '(:ignore t :wk "Magit pull")
+      "gP f" '(magit-pull :wk "Magit pull")
+      "gP p" '(magit-pull-from-pushremote :wk "Magit pull pushremote")
+      "gP u" '(magit-pull-from-upstream :wk "Magit pull upstream")
+      "gp" '(:ignore t :wk "Magit push")
+      "gp p" '(magit-push :wk "Magit push")
+      "gp c" '(magit-push-current :wk "Magit push current")
+      "gb" '(:ignore t :wk "Magit branch")
+      "gb b" '(magit-branch :wk "Magit branch")
+      "gb n" '(magit-branch-create :wk "Magit branch create")
+      "gb c" '(magit-branch-and-checkout :wk "Magit branch create and checkout")
+      "gb C" '(magit-branch-checkout :wk "Magit branch checkout")
+      "gb D" '(magit-branch-delete :wk "Magit branch delete"))
 
      (leader-keys
       "t" '(:ignore t :wk "Toggle")
@@ -285,6 +305,16 @@ Probably most useful one of org-tempo is: "<sTAB" will start source region.
   (require 'org-tempo)
 #+end_src
 
+* Highlight TODO
+#+begin_src emacs-lisp
+  (use-package hl-todo
+    :hook (prog-mode . hl-todo-mode)
+    :hook (yaml-mode . hl-todo-mode)
+    :config (setq hl-todo-keyword-faces
+      '(("TODO"   . "#90EE90")
+	("FIXME"  . "#FFBF00")
+	("NOTE"  . "#6F2DA8"))))
+#+end_src
 * Which-Key
 Install and setup Which-Key package
 #+begin_src emacs-lisp
@@ -305,9 +335,10 @@ Install and setup Which-Key package
 
 * Emacs Settings
 Configure Fonts and UI
-** Backup files
+** Backup and Lock files
 #+begin_src emacs-lisp
   (setq make-backup-files nil)
+  (setq create-lockfiles nil)
 #+end_src
 ** UI
 Disable Menubar, Toolbar, Scrollbar
@@ -344,6 +375,10 @@ Setup prefered fonts
   (setq-default line-spacing 0.12)
 #+end_src
 
+** Transparency
+#+begin_src emacs-lisp
+  (add-to-list 'default-frame-alist '(alpha-background . 90))
+#+end_src
 * Terminal
 ** Vterm
 Install vterm terminal
@@ -452,7 +487,12 @@ Add Doom modeline
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 #+end_src
 * Projectile
-Setup projectile
+** Ripgrep 
+#+begin_src emacs-lisp
+  (use-package ripgrep
+    :ensure t)
+#+end_src
+** Projectile
 #+begin_src emacs-lisp
   (use-package projectile
     :ensure t
