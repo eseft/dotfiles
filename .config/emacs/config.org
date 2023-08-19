@@ -9,6 +9,8 @@
   - [[#evil-mode][Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
 - [[#dired][Dired]]
+  - [[#user-settings][User Settings]]
+  - [[#additional-packages][Additional packages]]
 - [[#emms][EMMS]]
 - [[#all-the-icons][All The Icons]]
 - [[#ivy][Ivy]]
@@ -20,7 +22,6 @@
 - [[#highlight-todo][Highlight TODO]]
 - [[#which-key][Which-Key]]
 - [[#emacs-settings][Emacs Settings]]
-  - [[#user-settings][User Settings]]
   - [[#auto-refresh-buffers][Auto refresh buffers]]
   - [[#backup-and-lock-files][Backup and Lock files]]
   - [[#ui][UI]]
@@ -237,6 +238,11 @@ Istall and setup General
     )
 #+end_src
 * Dired
+** User Settings
+#+begin_src emacs-lisp
+  (setq dired-listing-switches "-al --group-directories-first")
+#+end_src
+** Additional packages
 #+begin_src emacs-lisp
   (use-package dired-open
     :config
@@ -370,10 +376,6 @@ Install and setup Which-Key package
 
 * Emacs Settings
 Configure All emacs buildin stuff
-** User Settings
-#+begin_src emacs-lisp
-  
-#+end_src
 ** Auto refresh buffers
 #+begin_src emacs-lisp
   (setq global-auto-revert-mode t)
