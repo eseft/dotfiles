@@ -8,16 +8,20 @@
   - [[#package-manager][Package Manager]]
   - [[#evil-mode][Evil Mode]]
   - [[#general-keybindings][General Keybindings]]
+- [[#dired][Dired]]
 - [[#emms][EMMS]]
 - [[#all-the-icons][All The Icons]]
 - [[#ivy][Ivy]]
 - [[#org-mode][Org Mode]]
+  - [[#org-settings][Org Settings]]
   - [[#enable-table-of-contents][Enable Table of Contents]]
   - [[#org-bullets][Org Bullets]]
   - [[#org-tempo][Org Tempo]]
 - [[#highlight-todo][Highlight TODO]]
 - [[#which-key][Which-Key]]
 - [[#emacs-settings][Emacs Settings]]
+  - [[#user-settings][User Settings]]
+  - [[#auto-refresh-buffers][Auto refresh buffers]]
   - [[#backup-and-lock-files][Backup and Lock files]]
   - [[#ui][UI]]
   - [[#fonts][Fonts]]
@@ -161,6 +165,12 @@ Istall and setup General
       "cf p" '(flycheck-previous-errors :wk "flycheck-previous-errors"))
 
     (leader-keys
+      "d" '(:ignore t :wk "Dired")
+      "d d" '(dired :wk "Open dired")
+      "d j" '(dired-jump :wk "Dired jump to current")
+      "d p" '(peep-dired :wk "Peep-dired"))
+
+    (leader-keys
       "w" '(:ignore t :wk "evil-window")
       "w w" '(evil-window-next :wk "Evil Window Next")
       "w c" '(evil-window-delete :wk "Evil Window Close")
@@ -190,13 +200,13 @@ Istall and setup General
       "p f" '(projectile-find-file :wk "Projectile Find File in Project")
       "p g" '(projectile-ripgrep :wk "Projectile Find in project with regexp")) 
 
-     (leader-keys
+    (leader-keys
       "h" '(:ignore t :wk "Help")
       "h f" '(describe-function :wk "Describe function")
       "h v" '(describe-variable :wk "Describe variable")
       "h r r" '((lambda () (interactive) (load-file (expand-file-name "init.el" user-emacs-directory)) (ignore (elpaca-process-queues))) :wk "Reload emacs config"))
 
-     (leader-keys
+    (leader-keys
       "g" '(:ignore t :wk "Magit")
       "gg" '(magit-status :wk "Magit status")
       "gc" '(:ignore t :wk "Magit clone")
@@ -216,15 +226,36 @@ Istall and setup General
       "gb C" '(magit-branch-checkout :wk "Magit branch checkout")
       "gb D" '(magit-branch-delete :wk "Magit branch delete"))
 
-     (leader-keys
+    (leader-keys
       "t" '(:ignore t :wk "Toggle")
       "t l" '(display-line-numbers-mode :wk "Toggle line numbers")
       "t t" '(vterm-toggle :wk "Toggle Vterm"))
 
-     (leader-keys
+    (leader-keys
       "q" '(:ignore t :wk "Quit")
       "q f" '(delete-frame :wk "Close emacs client frame"))
-  )
+    )
+#+end_src
+* Dired
+#+begin_src emacs-lisp
+  (use-package dired-open
+    :config
+    (setq dired-open-extensions '(("gif" . "sxiv")
+				  ("jpg" . "sxiv")
+				  ("png" . "sxiv")
+				  ("pdf" . "zathura")
+				  ("djvu" . "zathura")
+				  ("mkv" . "mpv")
+				  ("3gp" . "mpv")
+				  ("mp4" . "mpv"))))
+
+  (use-package dired-preview
+    :after dired
+    :config
+    (evil-define-key 'normal dired-mode-map (kbd "h") 'dired-up-directory)
+    (evil-define-key 'normal dired-mode-map (kbd "l") 'dired-open-file) ; use dired-find-file instead if not using dired-open package
+    )
+   (add-hook 'dired-mode-hook #'dired-preview-mode)
 #+end_src
 * EMMS
 Install and configure EMMS with mpv backend
@@ -285,6 +316,10 @@ Setup Ivy and dependend stuff
 #+end_src
 
 * Org Mode
+** Org Settings
+#+begin_src emacs-lisp
+  (setq org-directory "~/docs/org")
+#+end_src
 ** Enable Table of Contents
 #+begin_src emacs-lisp
   (use-package toc-org
@@ -334,7 +369,16 @@ Install and setup Which-Key package
 #+end_src
 
 * Emacs Settings
-Configure Fonts and UI
+Configure All emacs buildin stuff
+** User Settings
+#+begin_src emacs-lisp
+  
+#+end_src
+** Auto refresh buffers
+#+begin_src emacs-lisp
+  (setq global-auto-revert-mode t)
+  (setq dired-auto-revert-buffer t)
+#+end_src
 ** Backup and Lock files
 #+begin_src emacs-lisp
   (setq make-backup-files nil)
