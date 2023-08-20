@@ -241,6 +241,9 @@ floating_layout = layout.Floating(
         Match(wm_class="ssh-askpass"),  # ssh-askpass
         Match(title="branchdialog"),  # gitk
         Match(title="pinentry"),  # GPG key password entry
+        Match(wm_class="steam"),
+        Match(wm_class="unityhub"),
+        Match(wm_class="Unity"),
     ]
 )
 
