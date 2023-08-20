@@ -38,6 +38,7 @@
 - [[#git][GIT]]
   - [[#magit][Magit]]
   - [[#diff-hl][Diff-hl]]
+- [[#rainbow-mode][Rainbow Mode]]
 - [[#projectile][Projectile]]
   - [[#ripgrep][Ripgrep]]
   - [[#projectile-1][Projectile]]
@@ -531,6 +532,11 @@ Add Doom modeline
     (global-diff-hl-mode))
     (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+#+end_src
+* Rainbow Mode
+#+begin_src emacs-lisp
+(use-package rainbow-mode
+  :hook org-mode prog-mode)
 #+end_src
 * Projectile
 ** Ripgrep 

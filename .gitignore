@@ -2,6 +2,7 @@
 .#*
 \#*
 *~
+__paycache__
 # Emacs ignore
 .config/emacs/auto-save-list
 .config/emacs/.cache
