@@ -13,7 +13,7 @@ if status is-interactive
     ###############################
     ###         ALIASES         ###
     ###############################
-    alias ls='exa -al --git --icons -s type'
+    alias ls='eza -al --git --icons -s type'
     alias pcmupg='sudo pacman -Syu'
     alias pcmins='sudo pacman -S'
     alias pcmsrc='pacman -Ss'

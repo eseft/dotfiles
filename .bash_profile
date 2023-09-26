@@ -14,7 +14,6 @@ export XDG_CACHE_HOME="$HOME/.cache"
 export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_RUNTIME_DIR="/run/user/$UID"
 export PATH="${PATH}:${HOME}/.local/bin"
-export PATH="${PATH}:${HOME}/.emacs.d/bin"
 export WORKON_HOME="${HOME}/.local/share/virtualenvs"
-export EDITOR="emacsclient -r -a"
+export EDITOR="emacsclient -c --alternate-editor=emacs"
 

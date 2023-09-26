@@ -70,7 +70,7 @@ keys = [
     Key([mod], "space", lazy.widget["keyboardlayout"].next_keyboard(), desc="Next keyboard layout."),
 ]
 
-groups = [Group(i) for i in "123456789"]
+groups = [Group(i) for i in "12345"]
 
 for i in groups:
     keys.extend(
@@ -97,7 +97,14 @@ for i in groups:
     )
 
 layouts = [
-    layout.MonadTall(border_focus="#c678dd", border_normal="#000000", border_width=1, single_margin=4, margin=4),
+    layout.MonadTall(
+        border_focus="#c678dd",
+        border_normal="#000000",
+        border_width=1,
+        single_margin=4,
+        new_client_position="top",
+        margin=4
+    ),
     layout.Max(),
     # Try more layouts by unleashing below layouts.
     # layout.Columns(border_focus_stack=["#d75f5f", "#8f3d3d"], border_width=4),
@@ -157,22 +164,6 @@ screens = [
                     foreground = colors[6],
                     background = colors[0]
                 ),
-                widget.CheckUpdates(
-                    update_interval = 1800,
-                    distro = "Arch_checkupdates",
-                    foreground = colors[9],
-                    colour_have_updates = colors[9],
-                    colour_no_updates = colors[9],
-                    background = colors[0],
-                    # decorations=[
-                    #     BorderDecoration(
-                    #         colour = colors[5],
-                    #         border_width = [0, 0, 2, 0],
-                    #         padding_x = 5,
-                    #         padding_y = None,
-                    #     )
-                    # ],
-                ),
                 widget.TextBox(
                     text = "󰌌",
                     padding = 5,
@@ -202,7 +193,7 @@ screens = [
                     fontsize = 16,
                 ),
                 widget.Clock(
-                    format="%d-%m-%y %H:%M",
+                    format="%d/%m/%y %H:%M",
                     foreground = colors[6],
                     background = colors[0],
                     mouse_callbacks={"Button1": lazy.spawn("gsimplecal")}
@@ -244,7 +235,9 @@ floating_layout = layout.Floating(
         Match(wm_class="steam"),
         Match(wm_class="unityhub"),
         Match(wm_class="Unity"),
-    ]
+    ],
+    border_focus = colors[1],
+    border_normal = colors[0],
 )
 
 # Various hooks

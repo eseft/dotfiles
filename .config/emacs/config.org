@@ -27,6 +27,7 @@
   - [[#ui][UI]]
   - [[#fonts][Fonts]]
   - [[#transparency][Transparency]]
+  - [[#electric][Electric]]
 - [[#terminal][Terminal]]
   - [[#vterm][Vterm]]
   - [[#vterm-toggle][Vterm-toggle]]
@@ -43,6 +44,7 @@
   - [[#ripgrep][Ripgrep]]
   - [[#projectile-1][Projectile]]
 - [[#languages][Languages]]
+  - [[#cc][C/C++]]
   - [[#flycheck][Flycheck]]
   - [[#company][Company]]
   - [[#lsp][LSP]]
@@ -111,6 +113,7 @@ Install and config Evil-Mode
     (setq evil-want-keybinding nil)
     (setq evil-want-C-u-scroll t)
     :config
+    (evil-set-undo-system 'undo-redo)
     (evil-mode 1))
 #+end_src
 
@@ -326,6 +329,7 @@ Setup Ivy and dependend stuff
 ** Org Settings
 #+begin_src emacs-lisp
   (setq org-directory "~/docs/org")
+  (add-hook 'org-mode-hook 'org-indent-mode)
 #+end_src
 ** Enable Table of Contents
 #+begin_src emacs-lisp
@@ -336,7 +340,6 @@ Setup Ivy and dependend stuff
 
 ** Org Bullets
 #+begin_src emacs-lisp
-  (add-hook 'org-mode-hook 'toc-indent-mode)
   (use-package org-bullets)
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 #+end_src
@@ -425,6 +428,15 @@ Setup prefered fonts
 ** Transparency
 #+begin_src emacs-lisp
   (add-to-list 'default-frame-alist '(alpha-background . 90))
+#+end_src
+** Electric
+#+begin_src emacs-lisp
+  (delete-selection-mode 1)
+  (electric-indent-mode 1)
+  (electric-pair-mode 1)
+  (add-hook 'org-mode-hook (lambda ()
+                 (setq-local electric-pair-inhibit-perdicate `(lambda (c)
+   (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
 #+end_src
 * Terminal
 ** Vterm
@@ -553,6 +565,15 @@ Add Doom modeline
     (setq projectile-project-search-path '(("~/docs/projects" . 1))))
 #+end_src
 * Languages
+** C/C++
+#+begin_src emacs-lisp
+(add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+(setq c-default-style
+      '((java-mode . "java")
+       (awk-mode . "awk")
+       (c++-mode . "stroustrup")
+       (other . "gnu")))
+#+end_src
 ** Flycheck
 #+begin_src emacs-lisp
   (use-package flycheck
@@ -581,36 +602,50 @@ Add Doom modeline
 #+end_src
 ** LSP
 #+begin_src emacs-lisp
-    (use-package lsp-mode
-      :init
-      ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-      (setq lsp-keymap-prefix "C-c l")
-      :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-	     ;; Csharp
-	     (csharp-mode . lsp-deferred)
-	     ;; Python
-	     (python-mode . lsp-deferred)
-	     ;; C/C++
-	     (c-or-c++-mode . lsp-deferred)
-	     ;; if you want which-key integration
-	     (lsp-mode . lsp-enable-which-key-integration))
-      :commands (lsp lsp-deferred))
+  (use-package lsp-mode
+    :init
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+           ;; Csharp
+           (csharp-mode . lsp-deferred)
+           ;; Python
+           (python-mode . lsp-deferred)
+           ;; C/C++
+           (c-or-c++-mode . lsp-deferred)
+           ;; if you want which-key integration
+           (lsp-mode . lsp-enable-which-key-integration))
+    :commands (lsp lsp-deferred))
+    :config (setq lsp-clients-clangd-args '("--header-insertion=never" "--header-insertion-decorators=0"))
+       
 
-    ;; optionally
-    (use-package lsp-ui :commands lsp-ui-mode)
-    ;; if you are ivy user
-    (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-    (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+  ;; optionally
+  (use-package lsp-ui :commands lsp-ui-mode)
+  ;; if you are ivy user
+  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-    ;; The path to lsp-mode needs to be added to load-path as well as the
-    ;; path to the `clients' subdirectory.
-    (add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
-    (add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
+  ;; The path to lsp-mode needs to be added to load-path as well as the
+  ;; path to the `clients' subdirectory.
+  (add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
+  (add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
 #+end_src
 
 - TODO: Try to setup debugger
 #+begin_src emacs-lisp
   ;; optionally if you want to use debugger
-  ;; (use-package dap-mode)
+  ;; (use-package dap-mode
+  ;;   :config
+  ;;   (dap-auto-configure-mode)
+  ;;   ;; The modes below are optional
+  ;;   (dap-ui-mode 1)
+  ;;   ;; enables mouse hover support
+  ;;   (dap-tooltip-mode 1)
+  ;;   ;; use tooltips for mouse hover
+  ;;   ;; if it is not enabled `dap-mode' will use the minibuffer.
+  ;;   (tooltip-mode 1)
+  ;;   ;; displays floating panel with debug buttons
+  ;;   ;; requies emacs 26+
+  ;;   (dap-ui-controls-mode 1))
   ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+end_src
