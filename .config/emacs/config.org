@@ -358,7 +358,8 @@ Probably most useful one of org-tempo is: "<sTAB" will start source region.
     :config (setq hl-todo-keyword-faces
       '(("TODO"   . "#90EE90")
 	("FIXME"  . "#FFBF00")
-	("NOTE"  . "#6F2DA8"))))
+	("DONE"  . "#00BFFF")
+	("NOTE"  . "#FFBFFF"))))
 #+end_src
 * Which-Key
 Install and setup Which-Key package

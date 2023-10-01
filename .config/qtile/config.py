@@ -164,6 +164,21 @@ screens = [
                     foreground = colors[6],
                     background = colors[0]
                 ),
+                # widget.TextBox(
+                #     text = "",
+                #     padding = 10,
+                #     foreground = colors[3],
+                #     background = colors[0],
+                #     fontsize = 16,
+                # ),
+                # widget.GenPollText(
+                #     func = kernel_version,
+                #     update_interval = 0.5,
+                #     max_chars = 20,
+                #     padding = 5,
+                #     foreground = colors[3],
+                #     background = colors[0],
+                # ),
                 widget.TextBox(
                     text = "󰌌",
                     padding = 5,
@@ -250,6 +265,9 @@ def autostart():
 def set_gsimplecal_position(c):
     if c.name == "gsimplecal":
         c.cmd_set_position_floating(1680, 30)
+
+def kernel_version():
+    return subprocess.check_output(["uname", "-r"]).rstrip().lstrip().str()
 
 auto_fullscreen = True
 focus_on_window_activation = "smart"
