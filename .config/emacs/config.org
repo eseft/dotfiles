@@ -45,6 +45,7 @@
   - [[#projectile-1][Projectile]]
 - [[#languages][Languages]]
   - [[#cc][C/C++]]
+  - [[#python][Python]]
   - [[#flycheck][Flycheck]]
   - [[#company][Company]]
   - [[#lsp][LSP]]
@@ -575,6 +576,17 @@ Add Doom modeline
        (c++-mode . "stroustrup")
        (other . "gnu")))
 #+end_src
+** Python
+Setup pyenv
+#+begin_src emacs-lisp
+(use-package pyenv-mode
+  :ensure t
+ :init
+ (add-to-list 'exec-path "~/.local/pyenv/shims")
+ (setenv "WORKON_HOME" "~/.local/pyenv/versions/")
+ :config
+ (pyenv-mode))
+#+end_src
 ** Flycheck
 #+begin_src emacs-lisp
   (use-package flycheck
@@ -607,6 +619,7 @@ Add Doom modeline
     :init
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
     (setq lsp-keymap-prefix "C-c l")
+    (setq lsp-pylsp-plugins-flake8-max-line-length 100)
     :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
            ;; Csharp
            (csharp-mode . lsp-deferred)
@@ -618,7 +631,7 @@ Add Doom modeline
            (lsp-mode . lsp-enable-which-key-integration))
     :commands (lsp lsp-deferred))
     :config (setq lsp-clients-clangd-args '("--header-insertion=never" "--header-insertion-decorators=0"))
-       
+
 
   ;; optionally
   (use-package lsp-ui :commands lsp-ui-mode)

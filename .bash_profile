@@ -17,3 +17,12 @@ export PATH="${PATH}:${HOME}/.local/bin"
 export WORKON_HOME="${HOME}/.local/share/virtualenvs"
 export EDITOR="emacsclient -c --alternate-editor=emacs"
 
+
+###############################
+######### PYENV SETUP #########
+###############################
+
+export PYENV_ROOT="${HOME}/.local/pyenv"
+command -v pyenv >/dev/null || export PATH="${PYENV_ROOT}/bin:${PATH}"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
