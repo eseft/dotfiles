@@ -6,6 +6,7 @@ __pycache__
 # Emacs ignore
 .config/emacs/auto-save-list
 .config/emacs/.cache
+.config/emacs/.dap-breakpoints
 .config/emacs/emms
 .config/emacs/elpaca
 .config/emacs/tramp
