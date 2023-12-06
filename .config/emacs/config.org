@@ -28,6 +28,7 @@
   - [[#fonts][Fonts]]
   - [[#transparency][Transparency]]
   - [[#electric][Electric]]
+  - [[#compilation-mode][Compilation mode]]
 - [[#terminal][Terminal]]
   - [[#vterm][Vterm]]
   - [[#vterm-toggle][Vterm-toggle]]
@@ -204,6 +205,7 @@ Istall and setup General
       "p" '(:ignore t :wk "Projectile")    
       "p p" '(projectile-switch-project :wk "Projectile Switch Project")
       "p f" '(projectile-find-file :wk "Projectile Find File in Project")
+      "p c" '(projectile-compile-project :wk "Compile project")
       "p g" '(projectile-ripgrep :wk "Projectile Find in project with regexp")) 
 
     (leader-keys
@@ -411,7 +413,7 @@ Display Line Numbers and Truncated Lines
 Setup prefered fonts
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil
-    :font "JetBrainsMono Nerd Font Mono"
+    :font "JetBrainsMono NFM"
     :height 120
     :weight 'medium)
   (set-face-attribute 'variable-pitch nil
@@ -419,11 +421,11 @@ Setup prefered fonts
     :height 130
     :weight 'medium)
   (set-face-attribute 'fixed-pitch nil
-    :font "JetBrainsMono Nerd Font Mono"
+    :font "JetBrainsMono NFM"
     :height 120
     :weight 'medium)
   ;; To set correct fonts on client frames
-  (add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font Mono-12"))
+  (add-to-list 'default-frame-alist '(font . "JetBrainsMono NFM-12"))
   (setq-default line-spacing 0.12)
 #+end_src
 
@@ -439,6 +441,10 @@ Setup prefered fonts
   (add-hook 'org-mode-hook (lambda ()
                  (setq-local electric-pair-inhibit-perdicate `(lambda (c)
    (if (char-equal c ?<) t (,electric-pair-inhibit-predicate c))))))
+#+end_src
+** Compilation mode
+#+begin_src emacs-lisp
+  (add-hook 'compilation-filter-hook 'ansi-color-compilation-filter)
 #+end_src
 * Terminal
 ** Vterm
