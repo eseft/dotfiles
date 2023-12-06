@@ -50,6 +50,7 @@
   - [[#flycheck][Flycheck]]
   - [[#company][Company]]
   - [[#lsp][LSP]]
+  - [[#dap-mode][DAP-MODE]]
 
 * Install First
 ** Package Manager
@@ -621,51 +622,58 @@ Setup pyenv
 #+end_src
 ** LSP
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-    :init
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-    (setq lsp-pylsp-plugins-flake8-max-line-length 100)
-    :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-           ;; Csharp
-           (csharp-mode . lsp-deferred)
-           ;; Python
-           (python-mode . lsp-deferred)
-           ;; C/C++
-           (c-or-c++-mode . lsp-deferred)
-           ;; if you want which-key integration
-           (lsp-mode . lsp-enable-which-key-integration))
-    :commands (lsp lsp-deferred))
-    :config (setq lsp-clients-clangd-args '("--header-insertion=never" "--header-insertion-decorators=0"))
+   (use-package lsp-mode
+     :init
+     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+     (setq lsp-keymap-prefix "C-c l")
+     ;; pylsp config
+     (setq lsp-pylsp-plugins-flake8-max-line-length 100)
+     :hook (;; replace XXX-mode with concrete major-mode(e.g. python-mode)
+            ;; Csharp
+            (csharp-mode . lsp-deferred)
+            ;; Python
+            (python-mode . lsp-deferred)
+            ;; C/C++
+            (c-or-c++-mode . lsp-deferred)
+            ;; if you want which-key integration
+            (lsp-mode . lsp-enable-which-key-integration))
+     :commands (lsp lsp-deferred))
+     :config
+     ;; clangd config
+     (setq lsp-clients-clangd-args '("--header-insertion=never" "--header-insertion-decorators=0"))
+     ;; (setq lsp-pylsp-plugins-pydocstyle-add-ignore
+     ;;     '("D100" "D101" "D102"))
 
 
-  ;; optionally
-  (use-package lsp-ui :commands lsp-ui-mode)
-  ;; if you are ivy user
-  (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-  (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
+   ;; optionally
+   (use-package lsp-ui :commands lsp-ui-mode)
+   ;; if you are ivy user
+   (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+   (use-package lsp-treemacs :commands lsp-treemacs-errors-list)
 
-  ;; The path to lsp-mode needs to be added to load-path as well as the
-  ;; path to the `clients' subdirectory.
-  (add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
-  (add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
+   ;; The path to lsp-mode needs to be added to load-path as well as the
+   ;; path to the `clients' subdirectory.
+   (add-to-list 'load-path (expand-file-name "lib/lsp-mode" user-emacs-directory))
+   (add-to-list 'load-path (expand-file-name "lib/lsp-mode/clients" user-emacs-directory))
 #+end_src
 
-- TODO: Try to setup debugger
+** DAP-MODE
+Try to setup debugger
 #+begin_src emacs-lisp
-  ;; optionally if you want to use debugger
-  ;; (use-package dap-mode
-  ;;   :config
-  ;;   (dap-auto-configure-mode)
-  ;;   ;; The modes below are optional
-  ;;   (dap-ui-mode 1)
-  ;;   ;; enables mouse hover support
-  ;;   (dap-tooltip-mode 1)
-  ;;   ;; use tooltips for mouse hover
-  ;;   ;; if it is not enabled `dap-mode' will use the minibuffer.
-  ;;   (tooltip-mode 1)
-  ;;   ;; displays floating panel with debug buttons
-  ;;   ;; requies emacs 26+
-  ;;   (dap-ui-controls-mode 1))
-  ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+  (use-package dap-mode
+    :ensure t :after lsp-mode
+    :config
+    (dap-auto-configure-mode)
+    ;; The modes below are optional
+    (dap-ui-mode 1)
+    ;; enables mouse hover support
+    (dap-tooltip-mode 1)
+    ;; use tooltips for mouse hover
+    ;; if it is not enabled `dap-mode' will use the minibuffer.
+    (tooltip-mode 1)
+    ;; displays floating panel with debug buttons
+    ;; requies emacs 26+
+    (dap-ui-controls-mode 1))
+  (require 'dap-python) ;; to load the dap adapter for your language
+  (setq dap-python-debugger 'debugpy) ;; to load the dap adapter for your language
 #+end_src
