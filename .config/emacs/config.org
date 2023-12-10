@@ -41,9 +41,9 @@
   - [[#magit][Magit]]
   - [[#diff-hl][Diff-hl]]
 - [[#rainbow-mode][Rainbow Mode]]
-- [[#projectile][Projectile]]
+- [[#projectile-settings][Projectile Settings]]
   - [[#ripgrep][Ripgrep]]
-  - [[#projectile-1][Projectile]]
+  - [[#projectile][Projectile]]
 - [[#languages][Languages]]
   - [[#cc][C/C++]]
   - [[#python][Python]]
@@ -207,6 +207,7 @@ Istall and setup General
       "p p" '(projectile-switch-project :wk "Projectile Switch Project")
       "p f" '(projectile-find-file :wk "Projectile Find File in Project")
       "p c" '(projectile-compile-project :wk "Compile project")
+      "p b" '(projectile-switch-to-buffer :wk "Switch to project buffer")
       "p g" '(projectile-ripgrep :wk "Projectile Find in project with regexp")) 
 
     (leader-keys
@@ -559,7 +560,7 @@ Add Doom modeline
 (use-package rainbow-mode
   :hook org-mode prog-mode)
 #+end_src
-* Projectile
+* Projectile Settings
 ** Ripgrep 
 #+begin_src emacs-lisp
   (use-package ripgrep
