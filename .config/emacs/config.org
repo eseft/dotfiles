@@ -150,27 +150,25 @@ Istall and setup General
 
 
     (leader-keys
-      "." '(counsel-find-file :wk "Find file")
-      "f c" '((lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))) :wk "Edit emacs config")
-      "f r" '(counsel-recentf :wk "Find recent file"))
+      "." '(counsel-find-file :wk "Find file"))
 
     (leader-keys
       "b" '(:ignore t :wk "buffer")
       "b b" '(switch-to-buffer :wk "Switch buffer")
       "b i" '(ibuffer :wk "Ibuffer")
-      "b k" '(kill-this-buffer :wk "Kill this buffer")
+      "b k" '(kill-buffer :wk "Kill this buffer")
       "b n" '(next-buffer :wk "Next buffer")
       "b p" '(previous-buffer :wk "Previous buffer")
-      "b r" '(revert-buffer :wk "Reload buffer"))
+      "b r" '(revert-buffer-quick :wk "Reload buffer"))
 
     (leader-keys
-      "c" '(:ignore t :wk "Code")
-      "cf" '(:ignore t :wk "Flycheck")
-      "cf e" '(flycheck-explain-error-at-point :wk "flycheck-explain-error-at-point")
-      "cf h" '(flycheck-display-error-at-point :wk "flycheck-display-error-at-point")
-      "cf l" '(flycheck-list-errors :wk "flycheck-list-errors")
-      "cf n" '(flycheck-next-error :wk "flycheck-next-error")
-      "cf p" '(flycheck-previous-errors :wk "flycheck-previous-errors"))
+      "f" '(:ignore t :wk "Find/Flycheck")
+      "f e" '(flycheck-explain-error-at-point :wk "Explain-error-at-point")
+      "f l" '(flycheck-list-errors :wk "List-errors")
+      "f n" '(flycheck-next-error :wk "Next-error")
+      "f p" '(flycheck-previous-errors :wk "Previous-errors")
+      "f c" '((lambda () (interactive) (find-file (expand-file-name "config.org" user-emacs-directory))) :wk "Edit emacs config")
+      "f r" '(counsel-recentf :wk "Find recent file"))
 
     (leader-keys
       "d" '(:ignore t :wk "Dired")
@@ -388,7 +386,7 @@ Install and setup Which-Key package
 Configure All emacs buildin stuff
 ** Auto refresh buffers
 #+begin_src emacs-lisp
-  (setq global-auto-revert-mode t)
+  (global-auto-revert-mode 1)
   (setq dired-auto-revert-buffer t)
 #+end_src
 ** Backup and Lock files
@@ -404,9 +402,10 @@ Disable Menubar, Toolbar, Scrollbar
   (scroll-bar-mode -1)
 #+end_src
 
-Display Line Numbers and Truncated Lines
+Display Line Numbers and Truncated Lines. Lines enabled by default only in org and prog modes.
 #+begin_src emacs-lisp
-  (global-display-line-numbers-mode 1)
+  (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+  (add-hook 'org-mode-hook 'display-line-numbers-mode)
   (global-visual-line-mode t)
   (setq display-line-numbers-type 'relative)
 #+end_src

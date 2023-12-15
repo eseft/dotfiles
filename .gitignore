@@ -9,6 +9,7 @@ __pycache__
 .config/emacs/.dap-breakpoints
 .config/emacs/emms
 .config/emacs/elpaca
+.config/emacs/eshell
 .config/emacs/tramp
 .config/emacs/.lsp-session-v1
 .config/emacs/projectile-bookmarks.eld
