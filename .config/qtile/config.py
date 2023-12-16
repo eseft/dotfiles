@@ -55,6 +55,7 @@ keys = [
     Key([mod], "n", lazy.layout.normalize(), desc="Reset all window sizes"),
     Key([mod], "o", lazy.layout.maximize(), desc="Maximize window"),
     Key([mod], "e", lazy.spawn("emacsclient -c --alternate-editor=emacs"), desc="Launch emacsclient"),
+    Key([mod], "p", lazy.spawn("passmenu"), desc="Launch passmenu"),
     Key([mod], "Return", lazy.spawn("alacritty -e fish"), desc="Launch terminal"),
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
@@ -247,6 +248,7 @@ floating_layout = layout.Floating(
         Match(wm_class="ssh-askpass"),  # ssh-askpass
         Match(title="branchdialog"),  # gitk
         Match(title="pinentry"),  # GPG key password entry
+        Match(wm_class="pinentry-gtk-2"),  # GPG key password entry
         Match(wm_class="steam"),
         Match(wm_class="unityhub"),
         Match(wm_class="Unity"),
