@@ -360,9 +360,9 @@ Probably most useful one of org-tempo is: "<sTAB" will start source region.
     :hook (yaml-mode . hl-todo-mode)
     :config (setq hl-todo-keyword-faces
       '(("TODO"   . "#90EE90")
-	("FIXME"  . "#FFBF00")
-	("DONE"  . "#00BFFF")
-	("NOTE"  . "#FFBFFF"))))
+	  ("FIXME"  . "#FFBF00")
+	  ("DONE"  . "#00BFFF")
+	  ("NOTE"  . "#FFBFFF"))))
 #+end_src
 * Which-Key
 Install and setup Which-Key package
@@ -393,6 +393,10 @@ Configure All emacs buildin stuff
 #+begin_src emacs-lisp
   (setq make-backup-files nil)
   (setq create-lockfiles nil)
+  (setq backup-directory-alist
+        `(("." . "~/.local/share/emacs/backups")))
+  (setq auto-save-file-name-transforms
+        `((".*" "~/.local/share/emacs/auto-save-list" t)))
 #+end_src
 ** UI
 Disable Menubar, Toolbar, Scrollbar
@@ -502,7 +506,7 @@ Add Doom modeline
 	  :init (doom-modeline-mode 1)
 	  :config (setq doom-modeline-project-detection 'file-name
 			doom-modeline-height 30
-                        doom-modeline-modal-icon t))
+                    doom-modeline-modal-icon t))
 #+end_src
 
 * Dashboard
@@ -529,7 +533,7 @@ Add Doom modeline
     ;; - a cons of '("path/to/your/image.png" . "path/to/your/text.txt")
 
     (setq dashboard-items '((recents  . 5)
-			    (projects . 5)))
+			        (projects . 5)))
 
     ;; Content is not centered by default. To center, set
     (setq dashboard-center-content t)
@@ -551,6 +555,7 @@ Add Doom modeline
     :after magit
     :init
     (global-diff-hl-mode))
+    (add-hook 'prog-mode 'diff-hl-mode)
     (add-hook 'magit-pre-refresh-hook 'diff-hl-magit-pre-refresh)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
 #+end_src
